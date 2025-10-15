@@ -68,7 +68,7 @@ function plugin_version_singlesignon() {
       'version'        => PLUGIN_SINGLESIGNON_VERSION,
       'author'         => 'Edgard Lorraine Messias',
       'homepage'       => 'https://github.com/edgardmessias/glpi-singlesignon',
-      'minGlpiVersion' => '0.85'
+      'minGlpiVersion' => '11.0.0'
    ];
 }
 
@@ -80,8 +80,8 @@ function plugin_singlesignon_check_prerequisites() {
    //    echo __sso("Run first: composer install");
    //    return false;
    // }
-   if (version_compare(GLPI_VERSION, '0.85', 'lt')) {
-      echo __sso("This plugin requires GLPI >= 0.85");
+   if (version_compare(GLPI_VERSION, '11.0.0', 'lt')) {
+      echo __sso("This plugin requires GLPI >= 11.0.0");
       return false;
    } else {
       return true;
@@ -102,14 +102,26 @@ function sso_TableExists($table) {
    }
 
    global $DB;
-   return $DB->TableExists($table);
+    return $DB->tableExists($table);
 }
 
 function sso_FieldExists($table, $field, $usecache = true) {
    if (function_exists("FieldExists")) {
-      return FieldExists($table);
+      return FieldExists($table, $field, $usecache);
    }
 
    global $DB;
-   return $DB->FieldExists($table, $field, $usecache);
+   return $DB->fieldExists($table, $field, $usecache);
+}
+
+function sso_log_event($items_id, $type, $level, $service, $event) {
+   if (!isset($_SESSION) || !is_array($_SESSION)) {
+      $_SESSION = [];
+   }
+
+   if (!isset($_SESSION['glpi_currenttime'])) {
+      $_SESSION['glpi_currenttime'] = date('Y-m-d H:i:s');
+   }
+
+   \Glpi\Event::log($items_id, $type, $level, $service, $event);
 }

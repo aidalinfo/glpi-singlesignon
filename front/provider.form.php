@@ -25,8 +25,6 @@
  * ---------------------------------------------------------------------
  */
 
-use Glpi\Event;
-
 include ('../../../inc/includes.php');
 
 Session::checkRight("config", UPDATE);
@@ -41,7 +39,7 @@ if (isset($_POST["add"])) {
    $provider->check(-1, CREATE, $_POST);
 
    if ($newID = $provider->add($_POST)) {
-      Event::log($newID, "singlesignon", 4, "provider",
+      sso_log_event($newID, "singlesignon", 4, "provider",
             sprintf(__('%1$s adds the item %2$s'), $_SESSION["glpiname"], $_POST["name"]));
       if ($_SESSION['glpibackcreated']) {
          Html::redirect($provider->getLinkURL());
@@ -52,7 +50,7 @@ if (isset($_POST["add"])) {
    $provider->check($_POST["id"], DELETE);
    $provider->delete($_POST);
 
-   Event::log($_POST["id"], "singlesignon", 4, "provider",
+   sso_log_event($_POST["id"], "singlesignon", 4, "provider",
          //TRANS: %s is the user login
          sprintf(__('%s deletes an item'), $_SESSION["glpiname"]));
 
@@ -61,7 +59,7 @@ if (isset($_POST["add"])) {
    $provider->check($_POST["id"], DELETE);
 
    $provider->restore($_POST);
-   Event::log($_POST["id"], "singlesignon", 4, "provider",
+   sso_log_event($_POST["id"], "singlesignon", 4, "provider",
          //TRANS: %s is the user login
          sprintf(__('%s restores an item'), $_SESSION["glpiname"]));
    $provider->redirectToList();
@@ -69,7 +67,7 @@ if (isset($_POST["add"])) {
    $provider->check($_POST["id"], PURGE);
 
    $provider->delete($_POST, 1);
-   Event::log($_POST["id"], "singlesignon", 4, "provider",
+   sso_log_event($_POST["id"], "singlesignon", 4, "provider",
          //TRANS: %s is the user login
          sprintf(__('%s purges an item'), $_SESSION["glpiname"]));
    $provider->redirectToList();
@@ -77,7 +75,7 @@ if (isset($_POST["add"])) {
    $provider->check($_POST["id"], UPDATE);
 
    $provider->update($_POST);
-   Event::log($_POST["id"], "singlesignon", 4, "provider",
+   sso_log_event($_POST["id"], "singlesignon", 4, "provider",
          //TRANS: %s is the user login
          sprintf(__('%s updates an item'), $_SESSION["glpiname"]));
    Html::back();
