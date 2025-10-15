@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: singlesignon\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-04 21:23+0000\n"
+"POT-Creation-Date: 2025-10-15 07:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,14 +22,14 @@ msgstr ""
 msgid "Please, rename the plugin folder \"%s\" to \"singlesignon\""
 msgstr ""
 
-#: setup.php:67 front/provider.form.php:86 front/provider.form.php:88
+#: setup.php:67 front/provider.form.php:84 front/provider.form.php:86
 #: front/provider.php:33 front/provider.php:35 inc/preference.class.php:89
 #: inc/provider.class.php:84
 msgid "Single Sign-on"
 msgstr ""
 
 #: setup.php:84
-msgid "This plugin requires GLPI >= 0.85"
+msgid "This plugin requires GLPI >= 11.0.0"
 msgstr ""
 
 #: front/callback.php:40
