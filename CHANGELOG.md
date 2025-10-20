@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2025-10-20
+### :bug: Bug Fixes
+- [`66773cd`](https://github.com/aidalinfo/glpi-singlesignon/commit/66773cde50b4e6ca835a5bb3ddbcfe679dcf4eb9) - fix frontend component *(commit by [@Killian-Aidalinfo](https://github.com/Killian-Aidalinfo))*
+
+
 ## [v1.4.0] - 2025-02-04
 ### :sparkles: New Features
 - [`4901caf`](https://github.com/edgardmessias/glpi-singlesignon/commit/4901cafe3c5d3eb0f7f41e93bff4a50912c166ae) - Added es_ES translation *(commit by [@edgardmessias](https://github.com/edgardmessias))*
@@ -30,3 +35,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [`bd01b9c`](https://github.com/edgardmessias/glpi-singlesignon/commit/bd01b9c045b7dec749f51ccd608e0badbdd22fe7) - Updated vscode configs *(commit by [@edgardmessias](https://github.com/edgardmessias))*
 
 [v1.4.0]: https://github.com/edgardmessias/glpi-singlesignon/compare/v1.3.3...v1.4.0
+[1.5.1]: https://github.com/aidalinfo/glpi-singlesignon/compare/1.5.0...1.5.1
