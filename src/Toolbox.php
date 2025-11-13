@@ -93,6 +93,13 @@ class Toolbox
 
         $redirect = trim((string) $redirect);
 
+        if (strpos($redirect, '%') !== false) {
+            $decoded = rawurldecode($redirect);
+            if ($decoded !== false) {
+                $redirect = $decoded;
+            }
+        }
+
         if ($redirect === '') {
             return null;
         }
