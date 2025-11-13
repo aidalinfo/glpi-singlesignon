@@ -49,11 +49,115 @@ class Toolbox
         $url = $CFG_GLPI['root_doc'] . '/plugins/singlesignon/front/callback.php';
         $url .= '/provider/' . $provider_id;
 
-        if (!empty($query) && isset($query['redirect'])) {
-            $_SESSION['redirect'] = $query['redirect'];
+        if (!empty($query) && array_key_exists('redirect', $query)) {
+            $redirect = self::sanitizeRedirectTarget($query['redirect']);
+            if ($redirect !== null) {
+                $_SESSION['redirect'] = $redirect;
+            } else {
+                unset($_SESSION['redirect']);
+            }
         }
 
         return $url;
+    }
+
+    /**
+     * Build an absolute redirect URL that stays within the GLPI base URL.
+     * Returns null when the provided value is empty or potentially unsafe.
+     *
+     * @param string|null $redirect
+     * @return string|null
+     */
+    public static function buildSafeRedirectUrl($redirect): ?string
+    {
+        $path = self::sanitizeRedirectTarget($redirect);
+
+        if ($path === null) {
+            return null;
+        }
+
+        return rtrim(self::getBaseURL(), '/') . $path;
+    }
+
+    /**
+     * Sanitize a relative redirect target so it cannot escape GLPI's domain.
+     *
+     * @param string|null $redirect
+     * @return string|null
+     */
+    public static function sanitizeRedirectTarget($redirect): ?string
+    {
+        if ($redirect === null) {
+            return null;
+        }
+
+        $redirect = trim((string) $redirect);
+
+        if ($redirect === '') {
+            return null;
+        }
+
+        if (preg_match('#^[a-z][a-z0-9+\-.]*://#i', $redirect)) {
+            return null;
+        }
+
+        if (strpbrk($redirect, "\r\n") !== false) {
+            return null;
+        }
+
+        $redirect = str_replace('\\', '/', $redirect);
+
+        global $CFG_GLPI;
+        $root_doc = $CFG_GLPI['root_doc'] ?? '';
+        if ($root_doc && $root_doc !== '/' && strpos($redirect, $root_doc) === 0) {
+            $redirect = substr($redirect, strlen($root_doc));
+        }
+
+        $parts = parse_url($redirect);
+        if ($parts === false) {
+            return null;
+        }
+
+        if (isset($parts['scheme']) || isset($parts['host'])) {
+            return null;
+        }
+
+        $path = $parts['path'] ?? '';
+        $path = '/' . ltrim($path, '/');
+        $path = self::normalizePath($path);
+
+        if ($path === '') {
+            $path = '/';
+        }
+
+        $safe = $path;
+
+        if (!empty($parts['query'])) {
+            $safe .= '?' . $parts['query'];
+        }
+
+        if (!empty($parts['fragment'])) {
+            $safe .= '#' . $parts['fragment'];
+        }
+
+        return $safe;
+    }
+
+    private static function normalizePath(string $path): string
+    {
+        $segments = [];
+        foreach (explode('/', $path) as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
+            }
+            if ($segment === '..') {
+                array_pop($segments);
+                continue;
+            }
+            $segments[] = $segment;
+        }
+
+        return '/' . implode('/', $segments);
     }
 
     public static function isDefault($row, $query = [])

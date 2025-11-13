@@ -996,10 +996,19 @@ class Provider extends \CommonDBTM
             // Generate CSRF token for OAuth state parameter and remember redirect in session
             $state = \Session::getNewCSRFToken();
 
+            $redirectTarget = null;
             if (isset($_SESSION['redirect'])) {
-                $_SESSION['glpi_singlesignon_redirect'] = $_SESSION['redirect'];
-            } elseif (isset($_GET['redirect'])) {
-                $_SESSION['glpi_singlesignon_redirect'] = $_GET['redirect'];
+                $redirectTarget = Toolbox::sanitizeRedirectTarget($_SESSION['redirect']);
+            }
+
+            if ($redirectTarget === null && isset($_GET['redirect'])) {
+                $redirectTarget = Toolbox::sanitizeRedirectTarget($_GET['redirect']);
+            }
+
+            if ($redirectTarget !== null) {
+                $_SESSION['glpi_singlesignon_redirect'] = $redirectTarget;
+            } else {
+                unset($_SESSION['glpi_singlesignon_redirect']);
             }
 
             // Build the callback URL for OAuth redirect

@@ -24,10 +24,12 @@ class LoginRenderer
         $autoLoginUrl = null;
         $autoLoginPopup = null;
 
+        $redirectTarget = Toolbox::sanitizeRedirectTarget($_REQUEST['redirect'] ?? null);
+
         foreach ($providers as $row) {
             $query = [];
-            if (isset($_REQUEST['redirect']) && $_REQUEST['redirect'] !== '') {
-                $query['redirect'] = $_REQUEST['redirect'];
+            if ($redirectTarget !== null) {
+                $query['redirect'] = $redirectTarget;
             }
 
             $url = Toolbox::getCallbackUrl((int) $row['id'], $query);
@@ -90,8 +92,9 @@ class LoginRenderer
     {
         $url = Toolbox::getCurrentURL();
         $params = ['noAUTO' => 1];
-        if (isset($_REQUEST['redirect']) && $_REQUEST['redirect'] !== '') {
-            $params['redirect'] = $_REQUEST['redirect'];
+        $redirect = Toolbox::sanitizeRedirectTarget($_REQUEST['redirect'] ?? null);
+        if ($redirect !== null) {
+            $params['redirect'] = $redirect;
         }
 
         return $url . '?' . http_build_query($params);
