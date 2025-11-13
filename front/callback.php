@@ -91,7 +91,7 @@ if ($existing_user_id) {
     }
 }
 
-$REDIRECT = "";
+$redirectTarget = null;
 
 if ($user_id || $signon_provider->login()) {
 
@@ -103,27 +103,28 @@ if ($user_id || $signon_provider->login()) {
         $_SESSION['glpi_sso_login'] = true;
     }
 
-    // Retrieve redirect stored during authorization step
     if (isset($_SESSION['glpi_singlesignon_redirect'])) {
-        $REDIRECT = '?redirect=' . $_SESSION['glpi_singlesignon_redirect'];
+        $redirectTarget = PluginSinglesignonToolbox::sanitizeRedirectTarget($_SESSION['glpi_singlesignon_redirect']);
         unset($_SESSION['glpi_singlesignon_redirect']);
-    } elseif (isset($_GET['redirect'])) {
-        $REDIRECT = '?redirect=' . $_GET['redirect'];
     }
 
-    $url_redirect = '';
+    if ($redirectTarget === null && isset($_GET['redirect'])) {
+        $redirectTarget = PluginSinglesignonToolbox::sanitizeRedirectTarget($_GET['redirect']);
+    }
 
-    if ($_SESSION["glpiactiveprofile"]["interface"] == "helpdesk") {
-        if ($_SESSION['glpiactiveprofile']['create_ticket_on_login'] && empty($REDIRECT)) {
+    if ($redirectTarget !== null) {
+        $url_redirect = PluginSinglesignonToolbox::buildSafeRedirectUrl($redirectTarget);
+    } elseif ($_SESSION["glpiactiveprofile"]["interface"] == "helpdesk") {
+        if ($_SESSION['glpiactiveprofile']['create_ticket_on_login']) {
             $url_redirect = PluginSinglesignonToolbox::getBaseURL() . "/front/helpdesk.public.php?create_ticket=1";
         } else {
-            $url_redirect = PluginSinglesignonToolbox::getBaseURL() . "/front/helpdesk.public.php$REDIRECT";
+            $url_redirect = PluginSinglesignonToolbox::getBaseURL() . "/front/helpdesk.public.php";
         }
     } else {
-        if ($_SESSION['glpiactiveprofile']['create_ticket_on_login'] && empty($REDIRECT)) {
+        if ($_SESSION['glpiactiveprofile']['create_ticket_on_login']) {
             $url_redirect = PluginSinglesignonToolbox::getBaseURL() . "/front/ticket.form.php";
         } else {
-            $url_redirect = PluginSinglesignonToolbox::getBaseURL() . "/front/central.php$REDIRECT";
+            $url_redirect = PluginSinglesignonToolbox::getBaseURL() . "/front/central.php";
         }
     }
 
@@ -151,8 +152,8 @@ echo '<div class="center b">' . __('User not authorized to connect in GLPI') . '
 
 // Build redirect URL with noAUTO parameter
 $login_url = PluginSinglesignonToolbox::getBaseURL() . '/index.php?noAUTO=1';
-if (!empty($REDIRECT)) {
-    $login_url .= str_replace("?", "&", $REDIRECT);
+if ($redirectTarget !== null) {
+    $login_url .= '&redirect=' . rawurlencode($redirectTarget);
 }
 
 echo '<a href="' . $login_url . '" class="singlesignon">' . __('Log in again') . '</a></div>';
