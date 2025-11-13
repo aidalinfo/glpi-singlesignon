@@ -92,6 +92,16 @@ if ($existing_user_id) {
 }
 
 $redirectTarget = null;
+if (isset($_SESSION['glpi_singlesignon_redirect'])) {
+    $redirectTarget = PluginSinglesignonToolbox::sanitizeRedirectTarget($_SESSION['glpi_singlesignon_redirect']);
+    unset($_SESSION['glpi_singlesignon_redirect']);
+}
+if ($redirectTarget === null && isset($_GET['redirect'])) {
+    $redirectTarget = PluginSinglesignonToolbox::sanitizeRedirectTarget($_GET['redirect']);
+}
+if ($redirectTarget === null && isset($_SESSION['redirect'])) {
+    $redirectTarget = PluginSinglesignonToolbox::sanitizeRedirectTarget($_SESSION['redirect']);
+}
 
 if ($user_id || $signon_provider->login()) {
 
@@ -101,15 +111,6 @@ if ($user_id || $signon_provider->login()) {
         $signon_provider->linkUser($user_id);
         // Mark session as SSO login to prevent auto-login after logout
         $_SESSION['glpi_sso_login'] = true;
-    }
-
-    if (isset($_SESSION['glpi_singlesignon_redirect'])) {
-        $redirectTarget = PluginSinglesignonToolbox::sanitizeRedirectTarget($_SESSION['glpi_singlesignon_redirect']);
-        unset($_SESSION['glpi_singlesignon_redirect']);
-    }
-
-    if ($redirectTarget === null && isset($_GET['redirect'])) {
-        $redirectTarget = PluginSinglesignonToolbox::sanitizeRedirectTarget($_GET['redirect']);
     }
 
     if ($redirectTarget !== null) {
